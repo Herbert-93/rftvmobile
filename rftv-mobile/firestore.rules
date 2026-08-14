@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Users can read/write only their own profile; admins can read all.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if isOwner(uid) || isAdmin();
+    }
+
+    // Content collections: any signed-in user can read, only admins can write.
+    // (Writes normally go through the backend API using the Admin SDK, which
+    // bypasses these rules entirely — these rules are the safety net for any
+    // direct client access, e.g. the Flutter app's real-time listeners.)
+    match /channels/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /programs/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /settings/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Donations: a user can create/read their own; admins can read all.
+    match /donations/{id} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+  }
+}
