@@ -40,6 +40,24 @@ class AuthService {
   Future<void> sendPasswordReset(String email) =>
       _auth.sendPasswordResetEmail(email: email);
 
+  // ---------------- Guest ----------------
+
+  /// Lets someone use the app without creating an account. Firebase's
+  /// anonymous auth still issues a valid ID token, so the backend (which
+  /// requires a signed-in user on every request) keeps working normally.
+  /// Requires "Anonymous" to be enabled under Firebase Console > Authentication
+  /// > Sign-in method.
+  Future<UserCredential> continueAsGuest() async {
+    final cred = await _auth.signInAnonymously();
+    await _syncProfile(
+      uid: cred.user!.uid,
+      name: 'Guest',
+      email: '',
+      phone: '',
+    );
+    return cred;
+  }
+
   // ---------------- Google ----------------
 
   /// Returns null if the user cancelled the Google account picker.

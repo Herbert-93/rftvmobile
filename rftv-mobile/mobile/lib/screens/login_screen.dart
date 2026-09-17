@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _mode = 'email'; // 'email' or 'phone'
   bool _loading = false;
   bool _googleLoading = false;
+  bool _guestLoading = false;
   bool _obscure = true;
   String? _error;
 
@@ -95,6 +96,23 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _error = 'Google sign-in failed. Please try again.');
     } finally {
       if (mounted) setState(() => _googleLoading = false);
+    }
+  }
+
+  Future<void> _continueAsGuest() async {
+    setState(() {
+      _guestLoading = true;
+      _error = null;
+    });
+    try {
+      await _authService.continueAsGuest();
+      // No navigation needed: AuthGate listens for auth state changes and
+      // will swap straight to HomeShell once this resolves.
+    } catch (e) {
+      setState(() =>
+          _error = 'Could not continue without an account. Please try again.');
+    } finally {
+      if (mounted) setState(() => _guestLoading = false);
     }
   }
 
@@ -286,7 +304,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 26),
+                const SizedBox(height: 14),
+                Center(
+                  child: TextButton(
+                    onPressed: _guestLoading ? null : _continueAsGuest,
+                    child: _guestLoading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2))
+                        : Text('Continue without signing up',
+                            style: AppText.inter(
+                                size: 12.5,
+                                weight: FontWeight.w700,
+                                color: AppColors.slate)),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
                 Center(
                   child: GestureDetector(
                     onTap: () => Navigator.of(context).push(MaterialPageRoute(
