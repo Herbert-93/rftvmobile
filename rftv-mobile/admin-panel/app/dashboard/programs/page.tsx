@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 
+const PROGRAM_CATEGORIES = ["News", "Sports", "Movies", "Shows", "Documentaries"] as const;
+
 type Channel = { id: string; name: string };
 type Program = {
   id: string;
@@ -14,6 +16,7 @@ type Program = {
   videoUrl?: string;
   thumbnailUrl?: string;
   durationMinutes?: number;
+  category?: string;
 };
 
 const emptyForm = {
@@ -25,6 +28,7 @@ const emptyForm = {
   videoUrl: "",
   thumbnailUrl: "",
   durationMinutes: "",
+  category: "",
 };
 
 export default function ProgramsPage() {
@@ -64,6 +68,7 @@ export default function ProgramsPage() {
         videoUrl: form.videoUrl || undefined,
         thumbnailUrl: form.thumbnailUrl || undefined,
         description: form.description || undefined,
+        category: form.category || undefined,
       };
       if (editingId) {
         await api.put(`/programs/${editingId}`, payload);
@@ -95,6 +100,7 @@ export default function ProgramsPage() {
       videoUrl: p.videoUrl || "",
       thumbnailUrl: p.thumbnailUrl || "",
       durationMinutes: p.durationMinutes ? String(p.durationMinutes) : "",
+      category: p.category || "",
     });
   }
 
@@ -143,6 +149,19 @@ export default function ProgramsPage() {
             className="w-full border border-line rounded-lg px-3 py-2 text-sm"
             placeholder="RF News Nightly"
           />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate mb-1">Category</label>
+          <select
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+            className="w-full border border-line rounded-lg px-3 py-2 text-sm"
+          >
+            <option value="">None</option>
+            {PROGRAM_CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-xs font-semibold text-slate mb-1">Start</label>
@@ -230,6 +249,7 @@ export default function ProgramsPage() {
             <tr>
               <th className="p-3">Channel</th>
               <th className="p-3">Title</th>
+              <th className="p-3">Category</th>
               <th className="p-3">Start</th>
               <th className="p-3">End</th>
               <th className="p-3">Duration</th>
@@ -242,6 +262,7 @@ export default function ProgramsPage() {
               <tr key={p.id} className="border-t border-line">
                 <td className="p-3 text-slate">{channelName(p.channelId)}</td>
                 <td className="p-3 font-semibold text-navy">{p.title}</td>
+                <td className="p-3 text-slate">{p.category || "—"}</td>
                 <td className="p-3 text-slate">{new Date(p.startTime).toLocaleString()}</td>
                 <td className="p-3 text-slate">{new Date(p.endTime).toLocaleString()}</td>
                 <td className="p-3 text-slate">{p.durationMinutes ? `${p.durationMinutes} min` : "—"}</td>
@@ -260,7 +281,7 @@ export default function ProgramsPage() {
             ))}
             {programs.length === 0 && (
               <tr>
-                <td colSpan={7} className="p-6 text-center text-slate">No programs scheduled yet.</td>
+                <td colSpan={8} className="p-6 text-center text-slate">No programs scheduled yet.</td>
               </tr>
             )}
           </tbody>

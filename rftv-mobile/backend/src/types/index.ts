@@ -20,6 +20,7 @@ export interface Program {
   videoUrl?: string; // link to the hosted video (e.g. YouTube, Vimeo, direct .mp4/.m3u8)
   thumbnailUrl?: string;
   durationMinutes?: number;
+  category?: "News" | "Sports" | "Movies" | "Shows" | "Documentaries";
 }
 
 export interface RadioStatus {

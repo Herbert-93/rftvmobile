@@ -8,6 +8,7 @@ class Program {
   final String? videoUrl;
   final String? thumbnailUrl;
   final int? durationMinutes;
+  final String? category;
 
   Program({
     required this.id,
@@ -19,6 +20,7 @@ class Program {
     this.videoUrl,
     this.thumbnailUrl,
     this.durationMinutes,
+    this.category,
   });
 
   /// True when an admin has linked actual playable content (a movie or a
@@ -37,5 +39,6 @@ class Program {
         videoUrl: json['videoUrl'] as String?,
         thumbnailUrl: json['thumbnailUrl'] as String?,
         durationMinutes: (json['durationMinutes'] as num?)?.toInt(),
+        category: json['category'] as String?,
       );
 }

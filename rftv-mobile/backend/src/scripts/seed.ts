@@ -20,6 +20,17 @@ async function main() {
   }
 
   const now = new Date();
+
+  // Helper: returns a Date at the same time of day as `now`, but on the next
+  // occurrence of `targetWeekday` (1 = Monday ... 7 = Sunday, ISO weekday).
+  function nextWeekday(targetWeekday: number, hour: number, minute = 0) {
+    const d = new Date(now);
+    const diff = (targetWeekday - d.getDay() + 7) % 7; // 0..6 days ahead; today counts as 0
+    d.setDate(d.getDate() + diff);
+    d.setHours(hour, minute, 0, 0);
+    return d;
+  }
+
   const programs = [
     {
       channelId: "rf-tv1",
@@ -30,12 +41,15 @@ async function main() {
       videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       thumbnailUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
       durationMinutes: 10,
+      category: "Documentaries",
     },
     {
       channelId: "rf-tv1",
       title: "RF News Nightly",
       startTime: new Date(now.getTime() + 60 * 60000).toISOString(),
       endTime: new Date(now.getTime() + 90 * 60000).toISOString(),
+      description: "The day's top stories from around Uganda and the world.",
+      category: "News",
     },
     {
       channelId: "rf-tv1",
@@ -46,6 +60,60 @@ async function main() {
       videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
       thumbnailUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
       durationMinutes: 11,
+      category: "Shows",
+    },
+    // Spread across the week (Monday–Sunday) so the Home screen's weekly
+    // lineup has something to show on every day, across every category.
+    {
+      channelId: "rf-tv1",
+      title: "Morning News Bulletin",
+      startTime: nextWeekday(1, 7, 0).toISOString(),
+      endTime: nextWeekday(1, 7, 30).toISOString(),
+      description: "A quick roundup of the top headlines to start your Monday.",
+      category: "News",
+      durationMinutes: 30,
+    },
+    {
+      channelId: "rf-sports",
+      title: "Uganda Premier League Highlights",
+      startTime: nextWeekday(2, 19, 0).toISOString(),
+      endTime: nextWeekday(2, 20, 0).toISOString(),
+      description: "The best goals and moments from this week's league fixtures.",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+      thumbnailUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
+      durationMinutes: 60,
+      category: "Sports",
+    },
+    {
+      channelId: "rf-tv1",
+      title: "Movie Night: The Journey Home",
+      startTime: nextWeekday(3, 20, 0).toISOString(),
+      endTime: nextWeekday(3, 22, 0).toISOString(),
+      description: "A heartwarming feature film about family and finding your way back.",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      thumbnailUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
+      durationMinutes: 120,
+      category: "Movies",
+    },
+    {
+      channelId: "rf-faith",
+      title: "Sunday Church Service",
+      startTime: nextWeekday(7, 9, 0).toISOString(),
+      endTime: nextWeekday(7, 11, 0).toISOString(),
+      description: "Join us live for worship, the sermon, and fellowship.",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      thumbnailUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg",
+      durationMinutes: 120,
+      category: "Documentaries",
+    },
+    {
+      channelId: "rf-tv1",
+      title: "Talk of the Town",
+      startTime: nextWeekday(5, 18, 0).toISOString(),
+      endTime: nextWeekday(5, 19, 0).toISOString(),
+      description: "A weekly talk show covering culture, entertainment and community stories.",
+      category: "Shows",
+      durationMinutes: 60,
     },
   ];
 
@@ -101,7 +169,7 @@ async function main() {
       );
   }
 
-  console.log("Seed complete: 4 channels, 3 programs (1 with video), radio status, donation config, 9 donation records.");
+  console.log("Seed complete: 4 channels, 8 programs across the week (4 with video, all categorized), radio status, donation config, 9 donation records.");
   process.exit(0);
 }
 
