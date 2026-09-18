@@ -1,0 +1,37 @@
+# ---------- Dependencies ----------
+**/node_modules/
+
+# ---------- Environment secrets ----------
+**/.env
+**/.env.local
+**/.env.*.local
+
+# ---------- Backend (Node/TypeScript) ----------
+backend/dist/
+backend/*.log
+
+# ---------- Admin panel (Next.js) ----------
+admin-panel/.next/
+admin-panel/out/
+admin-panel/*.tsbuildinfo
+admin-panel/next-env.d.ts
+admin-panel/.vercel
+
+# ---------- Mobile (Flutter) ----------
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.pub-cache/
+mobile/.pub/
+mobile/build/
+mobile/android/app/debug
+mobile/android/app/profile
+mobile/android/app/release
+mobile/ios/Flutter/ephemeral/
+mobile/ios/Pods/
+
+# ---------- OS / editor junk ----------
+.DS_Store
+*.swp
+.idea/
+.vscode/
