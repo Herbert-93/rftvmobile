@@ -17,6 +17,9 @@ export interface Program {
   startTime: string; // ISO string
   endTime: string; // ISO string
   description?: string;
+  videoUrl?: string; // link to the hosted video (e.g. YouTube, Vimeo, direct .mp4/.m3u8)
+  thumbnailUrl?: string;
+  durationMinutes?: number;
 }
 
 export interface RadioStatus {
